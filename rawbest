@@ -1,0 +1,8 @@
+#/bin/bash
+rm 10000-of-00500.ccs.*
+samtools view -h ../n10000.subreads.bam > ./n10000.subreads.bam.sam
+samtools fastq ./n10000.subreads.bam.sam > ./n10000.subreads.bam.sam.fastq
+minimap2 --split-prefix 4 -a -t 40 -x map-pb  /mnt/sdb1/HGP002/HG002.combined.fa.gz ./n10000.subreads.bam.sam.fastq -o n10000.subreads.bam.sam.fastq.combined.sam
+samtools view -b n10000.subreads.bam.sam.fastq.combined.sam > n10000.subreads.bam.sam.fastq.combined.sam.bam
+../best/target/release/best n10000.subreads.bam.sam.fastq.combined.sam.bam /mnt/sdb1/HGP002/HG002.combined.fa.gz rawsubreads
+

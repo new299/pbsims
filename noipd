@@ -1,0 +1,17 @@
+#/bin/bash
+rm 10000-of-00500.ccs.*
+samtools view -h ../n10000.subreads.bam > a
+python3 ipdremove.py a > s.sam
+samtools view -b s.sam > s.bam
+./doccs
+samtools fastq ./10000-of-00500.ccs.bam > ./10000-of-00500.ccs.sam.fastq
+minimap2 --split-prefix 4 -a -t 40 -x map-pb  /mnt/sdb1/HGP002/HG002.combined.fa.gz ./10000-of-00500.ccs.sam.fastq -o 10000-of-00500.ccs.sam.fastq.combined.sam
+samtools view -b 10000-of-00500.ccs.sam.fastq.combined.sam > 10000-of-00500.ccs.sam.fastq.combined.sam.bam
+../best/target/release/best 10000-of-00500.ccs.sam.fastq.combined.sam.bam /mnt/sdb1/HGP002/HG002.combined.fa.gz noipd
+
+pbindex s.bam
+actc -j 40 ./s.bam ./10000-of-00500.ccs.bam actc.subreads_to_ccs.bam
+deepconsensus run --cpus 40 --subreads_to_ccs=actc.subreads_to_ccs.bam --ccs_bam=10000-of-00500.ccs.bam --checkpoint=model/checkpoint --output=deepconsensus.output.fastq
+minimap2 --split-prefix 4 -a -t 40 -x map-pb  /mnt/sdb1/HGP002/HG002.combined.fa.gz ./deepconsensus.output.fastq -o  deepconsensus.output.sam
+samtools view -b deepconsensus.output.sam > deepconsensus.output.bam
+../best/target/release/best deepconsensus.output.bam /mnt/sdb1/HGP002/HG002.combined.fa.gz noipd_deepconsensus

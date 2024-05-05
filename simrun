@@ -1,0 +1,13 @@
+#/bin/bash
+python makerandomseq.py > reads
+python sim_reads.py $1 $2 $3 > asim.sam
+cat readheader > s.sam
+cat asim.sam >> s.sam
+
+samtools view -b s.sam > s.bam
+./doccs
+samtools fastq ./10000-of-00500.ccs.bam > ./10000-of-00500.ccs.sam.fastq
+minimap2 --split-prefix 4 -a -t 40 -x map-pb  ./phix.fa ./10000-of-00500.ccs.sam.fastq -o 10000-of-00500.ccs.sam.fastq.phix.sam
+samtools view -b 10000-of-00500.ccs.sam.fastq.phix.sam > 10000-of-00500.ccs.sam.fastq.phix.sam.bam
+../best/target/release/best 10000-of-00500.ccs.sam.fastq.phix.sam.bam ./phix.fa sim
+cat sim.summary_identity_stats.csv

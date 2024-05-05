@@ -1,0 +1,12 @@
+#/bin/bash
+
+#simulate reads
+samtools view -b t.sam > t.bam
+./doccs
+
+minimap2 --split-prefix 4 -a -t 40 -x map-pb  ./reference.fa ./10000-of-00500.ccs.sam.fastq -o 10000-of-00500.ccs.sam.fastq.combined.sam
+samtools view -b 10000-of-00500.ccs.sam.fastq.combined.sam > 10000-of-00500.ccs.sam.fastq.combined.sam.bam
+./best/target/release/best 10000-of-00500.ccs.sam.fastq.combined.sam.bam /mnt/sdb1/HGP002/HG002.combined.fa.gz n10000com
+
+
+samtools view -b simreads_1.sam > simreads_1.bam
