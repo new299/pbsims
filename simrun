@@ -1,6 +1,6 @@
 #/bin/bash
 python makerandomseq.py > reads
-python sim_reads.py $1 $2 $3 > asim.sam
+python sim_reads.py $1 $2 $3 $4 > asim.sam
 cat readheader > s.sam
 cat asim.sam >> s.sam
 

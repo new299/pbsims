@@ -50,6 +50,7 @@ if len(sys.argv) == 1:
 mismatch_rate  = float(sys.argv[1]) 
 insertion_rate = float(sys.argv[2]) 
 deletion_rate  = float(sys.argv[3])   
+subreads       = int(sys.argv[4])
 
 def reverse_complement(dna_sequence):
     complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
@@ -61,7 +62,7 @@ def reverse_complement(dna_sequence):
 def print_mutated_sequence(r, sequence, mismatch_rate, insertion_rate, deletion_rate):
     total_length = 0
     adapter_sequence = "ATCTCTCTCAACAACAACAACGGAGGAGGAGGAAAAGAGAGAGAT"
-    for i in range(6):
+    for i in range(subreads):
         mutated_sequence = introduce_errors(sequence, mismatch_rate, insertion_rate, deletion_rate)
 
         cxbits = 0b00000011 # sets presence of bother forward and reverse adapter (which is I assume detected in subread extraction on insutrment

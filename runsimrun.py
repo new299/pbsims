@@ -3,8 +3,8 @@ import time
 import sys
 
 # Function to execute the external script and pipe output to a file
-def execute_script(a, b, c, output_file):
-    command = f"bash ./simrun {a} {b} {c}"
+def execute_script(a, b, c, d, output_file):
+    command = f"bash ./simrun {a} {b} {c} {d}"
     with open(output_file, 'a') as f:
         subprocess.run(command.split(), stdout=f, stderr=subprocess.STDOUT)
 
@@ -37,14 +37,17 @@ def extract_identity(csv_file):
 mis =0.0
 dels=0.0
 ins =0.0
+sub = 1
 
 while dels < 0.1:
     while ins < 0.1:
-        execute_script(mis, ins, dels, output_file)
-        err = extract_identity(summary_file)
+        while sub < 10:
+            execute_script(mis, ins, dels, sub, output_file)
+            err = extract_identity(summary_file)
         
-        print(err, " ", end='')
-        sys.stdout.flush()
+            print(err, " ", end='')
+            sys.stdout.flush()
+            sub += 1
         ins += 0.01
     dels += 0.01
     ins = 0
