@@ -1,6 +1,7 @@
 import subprocess
 import time
 import sys
+import json
 
 # Function to execute the external script and pipe output to a file
 def execute_script(a, b, c, d, output_file):
@@ -37,18 +38,34 @@ def extract_identity(csv_file):
 mis =0.0
 dels=0.0
 ins =0.0
-sub = 1
+sub = 3
 
-while dels < 0.1:
-    while ins < 0.1:
-        while sub < 10:
-            execute_script(mis, ins, dels, sub, output_file)
-            err = extract_identity(summary_file)
+results = {}
+
+while sub < 10:
+    while mis < 0.1:
+        print("Subreads: ", sub, "Mismatch: ", mis)
+        while dels < 0.1:
+            while ins < 0.1:
+                execute_script(mis, ins, dels, sub, output_file)
+                err = extract_identity(summary_file)
         
-            print(err, " ", end='')
-            sys.stdout.flush()
-            sub += 1
-        ins += 0.01
-    dels += 0.01
+                print(err, " ", end='')
+                results[mis,ins,dels,sub] = err
+                sys.stdout.flush()
+                ins += 0.01
+            print()
+            dels += 0.01
+            ins = 0
+        mis += 0.01
+        dels = 0
+        ins  = 0
+        print()
+    sub += 1
+    dels = 0
     ins = 0
+    mis = 0
     print()
+
+with open('results.json', 'w') as f:
+    json.dump(results, f)
